@@ -84,6 +84,7 @@ js/prop-render.js       Prop and Maguffin card renderer
 js/props.js             Props page
 assets/genres/          Core and 80s genre icons
 assets/fonts/           League Gothic, Anton and PT Sans Narrow (SIL Open Font License)
+tools/make-reference-pdf.js  rebuilds assets/7TV-Quick-Reference.pdf from the Reference tab (run after editing the Quick reference text)
 test/                   Playwright checks
 ```
 
