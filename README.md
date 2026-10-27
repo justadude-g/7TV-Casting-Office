@@ -33,7 +33,7 @@ It replaces the 1st edition casting tool ([jorgerobles/7tv2](https://github.com/
 
 ## Feedback
 
-Report a wrong stat, a layout glitch or an idea on the [Issues page](https://github.com/justadude-g/7TV/issues/new/choose). The templates ask for the profile name, where in the app it happened, and a screenshot.
+Report a wrong stat, a layout glitch or an idea on the [Issues page](https://github.com/justadude-g/7TV-Casting-Office/issues/new/choose). The templates ask for the profile name, where in the app it happened, and a screenshot.
 
 ## Text markup on the back
 
@@ -113,10 +113,10 @@ This is an unofficial fan tool. 7TV is a trademark of Crooked Dice Game Design S
 
 The 80s genre guide and the Steel Justice Feature Pack are paid material, so their profile cards live in `js/data/private/` and only ship in the private repository. Everything else, including the units, example roles, index and episode summaries, is shared.
 
-To update the public site, clone the public repository next to this one and run:
+To update the public site (justadude-g/7TV-Casting-Office), clone it next to this one and run:
 
 ```
-node tools/publish-public.js ../7TV-public --push
+node tools/publish-public.js ../7TV-Casting-Office --push
 ```
 
 The script copies every tracked file except `js/data/private/` and writes name-only stubs in their place (`js/data/profiles-stubs.js`: name, type, affiliation, ratings and lit genres, no stats, attacks, rules text or descriptions). It refuses to run if any 80s or Steel Justice card data is left in the copy, then commits and pushes.
