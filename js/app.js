@@ -1129,7 +1129,7 @@
       const draft = await CardStore.getMeta('draft');
       if (draft && draft.card) { openCard(draft.card, !!draft.dirty); return; }
     } catch (err) { console.warn('Storage unavailable', err); }
-    openCard(cardFromProfile(PROFILES.find((p) => p.id === 'bold-blade') || PROFILES[0]), false);
+    openCard(blankCard('star', S.lastSet), false);
   }
   window.App = { S, openCard, openProfile, cardFromProfile, blankCard, renderCardImages, toast, showView, refreshSaved, printCast, confirmDiscard, esc, uid, loadImg, readImageFile };
   boot();
