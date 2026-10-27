@@ -1,0 +1,31 @@
+name: Something is wrong
+description: A wrong stat or rule, a layout glitch, or something that does not work.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, and what did you expect to see instead?
+    validations:
+      required: true
+  - type: input
+    id: profile
+    attributes:
+      label: Profile or card
+      description: The profile name if it is about a specific card, for example Bold Blade or Maverick Cop.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where in the app?
+      options: [Casting (card editor), Choosing a starting profile, Call Sheet, My Cards, Print Sheet, Other]
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      description: For example Safari on a Mac, Chrome on Windows, Safari on an iPad.
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag an image here if something looks wrong on a card.

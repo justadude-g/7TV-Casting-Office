@@ -1,0 +1,15 @@
+{
+  "name": "7tv-casting-office",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Profile card designer for 7TV 2nd Edition. Static site, no build step.",
+  "scripts": {
+    "start": "python3 -m http.server 8765",
+    "stamp": "node tools/stamp.js",
+    "test": "node test/verify1.js && node test/verify2.js /tmp && node test/verify3.js /tmp && node test/verify4.js && node test/verify5.js && node test/verify6.js"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "playwright": "^1.40.0"
+  }
+}

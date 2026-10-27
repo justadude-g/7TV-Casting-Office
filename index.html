@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7TV Casting Office</title>
+<meta name="description" content="Design custom 7TV 2nd Edition profile cards: Stars, Co-Stars, Extras and vehicles, with Core or 80s genres.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png?v=2">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=2">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=2">
+<meta name="apple-mobile-web-app-title" content="Casting Office">
+<meta name="theme-color" content="#9e2b2b">
+<link rel="stylesheet" href="css/fonts.css?v=202610270014">
+<link rel="stylesheet" href="css/styles.css?v=202610270014">
+<script>try { document.documentElement.dataset.theme = localStorage.getItem('seventv-theme') === 'dark' ? 'dark' : 'light'; } catch (e) { document.documentElement.dataset.theme = 'light'; }</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <div>
+      <h1>Casting Office</h1>
+      <p>Profile cards for 7TV 2nd Edition</p>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-view="designer" class="tab is-active">Casting</button>
+    <button role="tab" data-view="cast" class="tab">Call Sheet</button>
+    <button role="tab" data-view="cards" class="tab">My Cards <span id="cardCount" class="count"></span></button>
+    <button role="tab" data-view="print" class="tab">Print Sheet</button>
+    <button role="tab" data-view="props" class="tab">Props</button>
+    <button role="tab" data-view="genres" class="tab">Genres</button>
+    <button role="tab" data-view="reference" class="tab">Reference</button>
+    <button role="tab" data-view="index" class="tab">Index</button>
+    <button role="tab" data-view="episodes" class="tab">Episodes</button>
+    <button role="tab" data-view="about" class="tab">About</button>
+  </nav>
+  <button id="btnTheme" class="btn btn-ghost theme-btn" type="button">Dark mode</button>
+  <button id="btnNew" class="btn btn-primary">New card</button>
+</header>
+
+<main>
+  <!-- DESIGNER -->
+  <section id="view-designer" class="view is-active">
+    <div class="designer">
+      <div class="stage-col">
+        <div class="stage" id="stage">
+          <div class="stage-cards" id="stageCards">
+            <figure class="card-wrap" id="wrapFront"><canvas id="cvFront" width="750" height="1040" aria-label="Card front preview"></canvas><figcaption>Front <span class="hint">Drag to move the portrait, scroll to zoom</span></figcaption></figure>
+            <figure class="card-wrap" id="wrapBack"><canvas id="cvBack" width="750" height="1040" aria-label="Card back preview"></canvas><figcaption>Back <span id="backScaleNote" class="hint"></span></figcaption></figure>
+          </div>
+          <div class="stage-tools">
+            <div class="seg" role="group" aria-label="Show">
+              <button data-show="both" class="is-on">Both</button><button data-show="front">Front</button><button data-show="back">Back</button>
+            </div>
+          </div>
+        </div>
+        <div class="portrait-bar panel">
+          <div class="row wrap">
+            <label class="btn btn-ghost file-btn">Portrait image<input type="file" id="inPortrait" accept="image/*"></label>
+            <label class="inline">Zoom <input type="range" id="inZoom" min="0.2" max="3" step="0.01" value="1"></label>
+            <label class="inline check"><input type="checkbox" id="inFlip"> Mirror</label>
+            <button class="btn btn-ghost" id="btnPortraitReset">Recentre</button>
+            <button class="btn btn-ghost" id="btnPortraitClear">Remove</button>
+          </div>
+          <p class="hint">Drop an image anywhere on the card. A cut-out PNG with a transparent background looks best, like the miniatures on the official cards.</p>
+          <div class="row wrap">
+            <button class="btn btn-primary" id="btnSave">Save card</button>
+            <button class="btn btn-ghost" id="btnDuplicate">Duplicate</button>
+            <button class="btn btn-ghost" id="btnPngFront">Front PNG</button>
+            <button class="btn btn-ghost" id="btnPngBack">Back PNG</button>
+            <button class="btn btn-ghost" id="btnPngPair">Front and back PNG</button>
+            <span id="saveState" class="save-state"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor" id="editor">
+        <div class="panel" id="pnlProfile">
+          <h2>Profile</h2>
+          <div class="grid2">
+            <label class="field span2">Name<input id="fName" type="text" autocomplete="off"></label>
+            <label class="field">Affiliation
+              <select id="fAffiliation"><option value="heroic">Heroic</option><option value="villainous">Villainous</option><option value="neutral">Neutral</option></select>
+            </label>
+            <label class="field">Profile type
+              <select id="fKind"><option value="star">Star</option><option value="co-star">Co-Star</option><option value="extra">Extra</option><option value="vehicle">Vehicle</option></select>
+            </label>
+            <label class="field">Ratings
+              <span class="with-toggle"><input id="fRatings" type="text" inputmode="numeric"><label class="inline check" title="Price the card with the customisation rules"><input type="checkbox" id="fRatingsAuto"> Auto</label></span>
+            </label>
+            <label class="field">Ratings note <input id="fRatingsNote" type="text" placeholder="or 5 for 3 models"></label>
+            <label class="field span2">Type label on card <input id="fTypeLabel" type="text" placeholder="Built from affiliation and type"></label>
+          </div>
+          <div class="base-row"><p class="base-line" id="baseLine"></p><button class="btn btn-ghost btn-small" id="btnCardReset">Reset whole card</button></div>
+        </div>
+
+        <div class="panel" id="pnlGenres">
+          <h2>Genres</h2>
+          <p class="hint">Pick the genre set this card uses, then light its genres. The other row shows the matching genres from the 80s alignment table. Lit genres decide which Extras can join the cast.</p>
+          <div class="genre-sets" id="genreToggles"></div>
+        </div>
+
+        <div class="panel" id="pnlStats">
+          <div class="panel-head">
+            <h2>Statistics</h2>
+            <button class="btn btn-ghost btn-small" id="btnStatsReset">Reset statistics</button>
+          </div>
+          <div class="stats" id="statFields"></div>
+        </div>
+
+        <div class="panel" id="pnlAttacks">
+          <div class="panel-head">
+            <h2>Attacks</h2>
+            <div class="row">
+              <select id="selAttackTable" aria-label="Add from the attack tables"><option value="">Add from attack tables</option></select>
+              <button class="btn btn-ghost btn-small" id="btnAddAttack">Add blank attack</button>
+            </div>
+          </div>
+          <p class="hint">Strike values follow the statistics: fight is Fight + Body, shoot is Shoot, presence is Mind + Spirit, plus the attack's modifier. Type a strike to set the modifier.</p>
+          <div id="attackList" class="attack-list"></div>
+        </div>
+
+        <div class="panel" id="pnlBack">
+          <div class="panel-head">
+            <h2>Back of card</h2>
+            <div class="row">
+              <button class="btn btn-ghost btn-small" id="btnLibrary">Special effects library</button>
+              <button class="btn btn-ghost btn-small" id="btnAddSection">Add section</button>
+            </div>
+          </div>
+          <p class="hint">In descriptions, <code>*word*</code> sets italics, <code>**word**</code> bold, <code>{PP}</code> draws a plot point and <code>\*</code> prints an asterisk. A new line starts a new paragraph.</p>
+          <div id="sectionList"></div>
+          <div class="row wrap">
+            <label class="inline">Back text size
+              <select id="fBackScale"><option value="">Fit automatically</option><option value="1">100%</option><option value="0.95">95%</option><option value="0.9">90%</option><option value="0.85">85%</option><option value="0.8">80%</option><option value="0.75">75%</option><option value="0.7">70%</option></select>
+            </label>
+          </div>
+        </div>
+
+        <div class="panel" id="pnlRatings">
+          <h2>Customisation cost</h2>
+          <div id="ratingsOut"></div>
+        </div>
+
+        <div class="panel" id="pnlLook">
+          <h2>Card look</h2>
+          <div class="row wrap">
+            <label class="inline check"><input type="checkbox" id="fDistress" checked> Distressed headings</label>
+            <label class="btn btn-ghost file-btn">Badge for this card<input type="file" id="inBadge" accept="image/*"></label>
+            <button class="btn btn-ghost btn-small" id="btnBadgeClear">Remove card badge</button>
+            <label class="inline">Band colour <input type="color" id="fBand"></label>
+            <button class="btn btn-ghost btn-small" id="btnColourReset">Type colours</button>
+          </div>
+          <div class="badge-default">
+            <div class="row wrap">
+              <span class="badge-preview" id="badgePreview" aria-hidden="true"></span>
+              <label class="btn btn-ghost file-btn">Badge for all cards<input type="file" id="inBadgeAll" accept="image/*"></label>
+              <button class="btn btn-ghost btn-small" id="btnBadgeAllClear">Remove</button>
+            </div>
+            <p class="hint">The round badge at the top left of the card. Upload your own image once and every card uses it, unless a card has its own badge. Plain margins around the image are trimmed off. It stays in this browser and goes into your backup file.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAST BUILDER -->
+  <section id="view-cast" class="view">
+    <div class="cast-layout">
+      <aside class="panel cast-side">
+        <div class="panel-head"><h2>Your casts</h2><button class="btn btn-primary btn-small" id="btnCastNew">New cast</button></div>
+        <div id="castList" class="cast-list"></div>
+      </aside>
+
+      <div class="cast-main" id="castMain">
+        <details class="panel cast-settings" id="castSettings" open>
+          <summary><span id="cSettingsTitle">Cast settings</span></summary>
+          <div class="grid-cast">
+            <label class="field span-all">Cast name<input id="cName" type="text" autocomplete="off"></label>
+            <label class="field">Affiliation
+              <select id="cAff"><option value="heroic">Heroic</option><option value="villainous">Villainous</option><option value="neutral">Neutral</option></select>
+            </label>
+            <label class="field">Ratings limit
+              <span class="with-toggle"><input id="cLimit" type="number" min="0" step="1">
+              <select id="cPreset" aria-label="Ratings presets"><option value="">Preset</option><option value="25">Starter game (25)</option><option value="30">Starter cast (30)</option><option value="50">Basic cast (50)</option><option value="75">Large cast (75)</option><option value="100">Cinematic spectacle (100)</option></select></span>
+            </label>
+            <label class="field">Genre for this episode
+              <select id="cGenre"></select>
+            </label>
+          </div>
+          <p class="hint" id="cAffHint"></p>
+        </details>
+
+        <div class="panel cast-summary">
+          <div class="meter-row">
+            <div class="meter-num"><b id="cTotal">0</b> <span id="cOf"></span></div>
+            <div class="meter" aria-hidden="true"><span id="cBar"></span></div>
+          </div>
+          <div class="cast-counts" id="cCounts"></div>
+          <div class="cast-genres" id="cGenres"></div>
+          <div id="cWarnings"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Cast members</h2>
+            <div class="row wrap">
+              <button class="btn btn-ghost btn-small" id="btnCastPrint">Print these cards</button>
+              <button class="btn btn-ghost btn-small" id="btnCastDup">Duplicate cast</button>
+              <button class="btn btn-ghost btn-small btn-danger" id="btnCastDel">Delete cast</button>
+            </div>
+          </div>
+          <div id="cMembers" class="members"></div>
+        </div>
+      </div>
+
+      <aside class="panel cast-add">
+        <h2>Add to the cast</h2>
+        <div class="seg seg-full" id="addSource" role="group" aria-label="Source">
+          <button data-src="official" class="is-on">Official profiles</button><button data-src="units">Units</button><button data-src="mine">My Cards</button>
+        </div>
+        <div class="seg seg-full" id="addBook" role="group" aria-label="Book">
+          <button data-book="" class="is-on">All</button><button data-book="core">Core</button><button data-book="80s">80s</button><button data-book="steeljustice">Steel Justice</button>
+        </div>
+        <input type="search" id="addSearch" placeholder="Search by name or example">
+        <div class="kind-tabs" id="addKinds" role="group" aria-label="Profile type"></div>
+        <label class="inline check"><input type="checkbox" id="addFits" checked> <span id="addFitsLabel">Only show profiles that fit this cast</span></label>
+        <div id="addList" class="add-list"></div>
+      </aside>
+    </div>
+    <div class="cast-bar" id="castBar" aria-live="polite">
+      <div class="cb-total"><b id="cbTotal">0</b> <span id="cbOf"></span><div class="meter"><span id="cbBar"></span></div></div>
+      <button type="button" class="btn btn-primary" id="cbToggle">Add profiles</button>
+    </div>
+  </section>
+
+  <!-- MY CARDS -->
+  <section id="view-cards" class="view">
+    <div class="toolbar">
+      <div class="row wrap">
+        <input type="search" id="cardSearch" placeholder="Search your cards">
+        <button class="btn btn-ghost" id="btnSelectAll">Select all</button>
+        <button class="btn btn-ghost" id="btnSelectNone">Clear selection</button>
+        <span class="cast-total" id="castTotal"></span>
+      </div>
+      <div class="row wrap">
+        <button class="btn btn-ghost" id="btnExport">Export backup</button>
+        <label class="btn btn-ghost file-btn">Import backup<input type="file" id="inImport" accept="application/json,.json"></label>
+      </div>
+    </div>
+    <div id="cardGrid" class="card-grid"></div>
+    <div id="cardsEmpty" class="empty" hidden>
+      <p>No saved cards yet. Start a card from one of the official profiles and save it here.</p>
+      <button class="btn btn-primary" data-action="new">New card</button>
+    </div>
+  </section>
+
+  <!-- PRINT -->
+  <section id="view-print" class="view">
+    <div class="print-layout">
+      <div class="panel print-opts">
+        <h2>Print Sheet</h2>
+        <p class="hint">Select cards in My Cards, set how many copies you need, then make a PDF. Cards print at 63.5 x 88 mm.</p>
+        <div id="printSource" class="print-source" hidden></div>
+        <label class="field">Layout
+          <select id="pLayout"><option value="fold">Fold-over: front beside back, 4 cards per sheet</option><option value="grid">Nine per page, backs on separate pages</option></select>
+        </label>
+        <p class="hint" id="pLayoutHint"></p>
+        <label class="field">Paper
+          <select id="pPaper"><option value="a4">A4</option><option value="letter">US Letter</option></select>
+        </label>
+        <label class="inline check" id="pBacksRow"><input type="checkbox" id="pBacks" checked> Add back pages for double-sided printing</label>
+        <label class="inline check"><input type="checkbox" id="pMarks" checked> Crop marks</label>
+        <label class="field">Gap between cards (mm)<input type="number" id="pGap" min="0" max="6" step="0.5" value="0"></label>
+        <div id="printList" class="print-list"></div>
+        <button class="btn btn-primary" id="btnPdf">Make PDF</button>
+        <p class="hint" id="pdfState"></p>
+      </div>
+      <div class="print-preview" id="printPreview"></div>
+    </div>
+  </section>
+  <!-- ABOUT -->
+  <section id="view-props" class="view">
+    <div class="designer">
+      <div class="stage-col">
+        <div class="stage">
+          <div class="stage-cards">
+            <figure class="card-wrap"><canvas id="pcFront" width="750" height="1040" aria-label="Prop or Maguffin card front"></canvas><figcaption>Front <span class="hint">Drag to move the image, scroll to zoom</span></figcaption></figure>
+            <figure class="card-wrap"><canvas id="pcBack" width="750" height="1040" aria-label="Prop or Maguffin card back"></canvas><figcaption>Back <span class="hint" id="pcBackNote"></span></figcaption></figure>
+          </div>
+        </div>
+        <div class="portrait-bar panel">
+          <div class="row wrap">
+            <label class="btn btn-ghost file-btn">Item image<input type="file" id="pcImage" accept="image/*"></label>
+            <label class="inline">Zoom <input type="range" id="pcZoom" min="0.2" max="3" step="0.01" value="1"></label>
+            <label class="inline check"><input type="checkbox" id="pcFlip"> Mirror</label>
+            <button class="btn btn-ghost" id="pcRecentre">Recentre</button>
+            <button class="btn btn-ghost" id="pcImageClear">Remove</button>
+          </div>
+          <p class="hint">Drop an image anywhere on the card. A cut-out PNG with a transparent background sits on the coloured panel like the items on the official cards. A Maguffin shows the same image on its back.</p>
+          <div class="row wrap">
+            <button class="btn btn-primary" id="pcSave">Save card</button>
+            <button class="btn btn-ghost" id="pcDuplicate">Duplicate</button>
+            <button class="btn btn-ghost" id="pcPng">Front and back PNG</button>
+            <span id="pcState" class="save-state"></span>
+          </div>
+        </div>
+      </div>
+      <div class="editor">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Prop or Maguffin</h2>
+            <div class="row"><button class="btn btn-ghost btn-small" id="pcNewProp">New Prop</button><button class="btn btn-ghost btn-small" id="pcNewMag">New Maguffin</button></div>
+          </div>
+          <div class="seg seg-full" id="pcDeck" role="group" aria-label="Card type">
+            <button data-deck="prop" class="is-on">Prop</button><button data-deck="maguffin">Maguffin</button>
+          </div>
+          <div class="grid2" style="margin-top: 10px">
+            <label class="field span2">Name<input id="pcName" type="text" autocomplete="off"></label>
+            <label class="field">Play<input id="pcPlay" type="text" placeholder="Model's Activation"></label>
+            <label class="field">Action
+              <select id="pcAction"><option value="F">Free action (F)</option><option value="S">Special action (S)</option><option value="P">Passive (P)</option><option value="">No symbol</option></select>
+            </label>
+            <label class="field">Cost
+              <select id="pcCost"><option value="0">None</option><option value="1">1 plot point</option><option value="2">2 plot points</option><option value="3">3 plot points</option></select>
+            </label>
+            <span></span>
+            <label class="field span2" id="pcFlavourRow">Flavour text (bold)<textarea id="pcFlavour" rows="3" placeholder="These rad glasses let you keep an impossible level of cool..."></textarea></label>
+            <label class="field span2"><span id="pcEffectLabel">Effect</span><textarea id="pcEffect" rows="5" placeholder="Choose any point 12&quot; away. Place this model at that point immediately."></textarea></label>
+          </div>
+          <p class="hint">In the text, <code>*word*</code> sets italics, <code>**word**</code> bold and <code>{PP}</code> draws a plot point. <code>{F}</code>, <code>{S}</code> and <code>{P}</code> draw action symbols. Text shrinks to fit the card.</p>
+        </div>
+        <div class="panel">
+          <h2>Prop card back</h2>
+          <div class="row wrap">
+            <span class="badge-preview prop-back-preview" id="pcBackPreview" aria-hidden="true"></span>
+            <label class="btn btn-ghost file-btn">Back image for all Prop cards<input type="file" id="pcBackImg" accept="image/*"></label>
+            <button class="btn btn-ghost btn-small" id="pcBackClear">Use the drawn back</button>
+          </div>
+          <p class="hint">Every Prop card shares one back. Without an upload it uses a drawn prop-store back. Upload your own art once and every Prop card uses it. It stays in this browser and goes into your backup file. The round badge comes from Badge for all cards in Casting.</p>
+        </div>
+        <div class="panel">
+          <h2>Printing</h2>
+          <p class="hint">Saved Prop and Maguffin cards appear in My Cards. Tick Print on them and use the Print Sheet like any other card; the fold-over layout puts each front beside its back.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-genres" class="view">
+    <div class="genres-page">
+      <div class="panel gp-intro">
+        <h2>Genres</h2>
+        <p>Every cast picks a genre, and its genre effects only work if some of your cast share it. The Core Rulebook has six genres (pp. 22-23) and the 80s book six more (pp. 26-27). They pair up for mixed casts through the 80s alignment table. Click a genre to see films that fit it, then open a film to see its main characters as 7TV cast members.</p>
+      </div>
+      <div class="gp-sets">
+        <div class="panel"><h3 class="gp-set-title">Core genres</h3><div class="gp-grid" id="gpCore"></div></div>
+        <div class="panel"><h3 class="gp-set-title">80s genres</h3><div class="gp-grid" id="gp80s"></div></div>
+      </div>
+      <div class="panel gp-films" id="gpFilms">
+        <div class="gp-head"><h2>Film inspiration</h2><span class="gp-count" id="gpCount"></span><button type="button" class="btn btn-ghost btn-small" id="gpClear" hidden>Clear filters</button></div>
+        <div class="gp-filters">
+          <input type="search" id="gpSearch" placeholder="Search films, characters, actors or profiles" aria-label="Search films">
+          <select id="gpGenre" aria-label="Genre"></select>
+          <div class="seg" id="gpDecade" role="group" aria-label="Decade"></div>
+        </div>
+        <div id="gpList"></div>
+        <p class="hint gp-note">Films from the bibliographies of the Core Rulebook and the 80s book, plus more from the 1980s on, chosen for 7TV-style action. The 7TV roles and profiles are suggestions for building your own cast, not official profiles.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-reference" class="view">
+    <div class="qref">
+      <div class="panel qref-intro">
+        <div>
+          <h2>Quick reference</h2>
+          <p>Setup, the turn sequence, plot points, victory points, actions, defence and strike rolls, statistic tests and statuses for 7TV 2nd Edition, on two A4 pages. Page numbers refer to the Core Rulebook. <span class="q-pp">&#9733;</span> is a plot point.</p>
+          <p class="hint">Print at actual size (100%), landscape. For one double-sided sheet, choose flip on short edge.</p>
+        </div>
+        <a class="btn btn-primary qref-dl" href="assets/7TV-Quick-Reference.pdf" download="7TV Quick Reference.pdf">Download the PDF</a>
+      </div>
+      <h2 class="qref-title">Setting up and playing a turn</h2>
+      <div class="qref-grid">
+      <div class="panel qref-col">
+      <h2>Set up an episode</h2>
+      <p style="margin-bottom: 6px">Do these in order before the first turn (<span class="q-nw">pp. 66-71</span>).</p>
+      <div class="q-step"><div class="q-num">1</div><div><div class="q-st">Determine the episode</div>
+      <p>Roll 1D6 or pick one (<span class="q-nw">pp. 126-132</span>).</p>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px 8px; font-size: 13.5px"><span><b>1</b> The Battle</span><span><b>2</b> The Escape</span><span><b>3</b> The Race</span><span><b>4</b> The Raid</span><span><b>5</b> The Rescue</span><span><b>6</b> The Theft</span></div></div></div>
+      <div class="q-step"><div class="q-num">2</div><div><div class="q-st">Attacker and defender</div>
+      <p>Each side rolls 1D6 + the highest Mind in its cast. The higher result chooses to attack or defend.</p></div></div>
+      <div class="q-step"><div class="q-num">3</div><div><div class="q-st">Tropes <span class="q-opt">optional</span></div>
+      <p>Add a trope (18 on p. 145). Tropes often change the number and placing of objective tokens, so check first.</p></div></div>
+      <div class="q-step"><div class="q-num">4</div><div><div class="q-st">Objective tokens</div>
+      <ul><li>Roll 1D6 for how many tokens.</li><li>The defender places the first face down, then sides alternate.</li><li>Not within 12" of a start location or 6" of another token.</li><li>To collect: base contact and a special action. A Star or Co-Star who claims one gains <span style="white-space: nowrap"><span class="q-pp">★</span><span class="q-pp">★</span></span>.</li></ul></div></div>
+      <div class="q-step"><div class="q-num">5</div><div><div class="q-st">The maguffin <span class="q-opt">optional</span></div>
+      <p>The token furthest from any model. Whoever claims it draws a random maguffin card (use once, then discard). Worth 1D3 VP.</p></div></div>
+      <div class="q-step"><div class="q-num">6</div><div><div class="q-st">Start locations</div>
+      <p>The defender picks a table edge; the attacker takes the opposite one. Each start zone runs from the edge up to 3" in.</p></div></div>
+      <div class="q-step"><div class="q-num">7</div><div><div class="q-st">Place your models</div>
+      <p>Defender, then attacker, place models without <i>Espionage</i>. Then defender, then attacker, place <i>Espionage</i> models. Keep units together.</p></div></div>
+      </div>
+      <div class="panel qref-col">
+      <div class="q-step"><div class="q-num">8</div><div><div class="q-st">Build the script deck</div>
+      <p>Shuffle each act. Stack finale cards at the bottom, act two on them, act one on top.</p>
+      <table class="q-tbl"><tr><th>Longest table side</th><th style="text-align: right">Each act</th><th style="text-align: right">Total</th></tr>
+      <tr><td>2-3 feet</td><td class="q-n">5</td><td class="q-n">15</td></tr>
+      <tr><td>4 feet</td><td class="q-n">6</td><td class="q-n">18</td></tr>
+      <tr><td>5 feet or more</td><td class="q-n">7</td><td class="q-n">21</td></tr></table>
+      <p class="q-ref">No script cards? Use clubs, spades and diamonds (p. 76).</p></div></div>
+      <div class="q-step"><div class="q-num">9</div><div><div class="q-st">Prop store</div>
+      <p>1 prop card per Star and Co-Star, +1 per model with the <i>Prop</i> special effect, plus any bonus cards from other effects.</p></div></div>
+      <div class="q-step"><div class="q-num">10</div><div><div class="q-st">Roll for initiative</div>
+      <p>Each side rolls 1D6 + the highest Mind in its cast. A tie: both gain <span class="q-pp">★</span> and roll again. The winner is on screen first; the other side gains <span style="white-space: nowrap"><span class="q-pp">★</span><span class="q-pp">★</span></span>.</p></div></div>
+
+      <h2 style="margin-top: 8px">Turn sequence</h2>
+      <p>One side is <b>on screen</b> each turn and plays phases 1 to 3. Then the other side takes its turn.</p>
+      <div class="q-phase"><div class="q-pn">1</div><div><div class="q-ph">Script phase</div>
+      <p>Flip 1 card (1 or 2 after your first turn). Flipping 2 gives both sides <span style="white-space: nowrap"><span class="q-pp">★</span><span class="q-pp">★</span></span>; play the last card only.</p></div></div>
+      <div class="q-phase"><div class="q-pn">2</div><div><div class="q-ph">Action phase</div>
+      <p>Gain plot points, activate models, remove statuses.</p></div></div>
+      <div class="q-phase"><div class="q-pn">3</div><div><div class="q-ph">End phase</div>
+      <ul><li><b>Axed?</b> More models removed from play than in play: pass a Spirit test with a Star or Co-Star in play, or remove 1D6 models. Axed Extras stop generating <span class="q-pp">★</span>.</li>
+      <li><b>On Fire?</b> Roll for each model (page 2).</li>
+      <li><b>Steal the scene?</b> Once per episode: activate one Star or Co-Star again. Not once a finale card is on top of the deck.</li></ul></div></div>
+      </div>
+      <div class="panel qref-col">
+      <h2>Plot points <span class="q-pp" style="width: 16px; height: 16px; line-height: 16px; font-size: 11px; vertical-align: 1px">★</span></h2>
+      <h3 style="margin-top: 2px">Gain</h3>
+      <table class="q-tbl">
+      <tr><th>When</th><th style="text-align: right">Gain</th></tr>
+      <tr><td>Action phase: each Star in play</td><td class="q-n"><span style="white-space: nowrap"><span class="q-pp">★</span><span class="q-pp">★</span></span></td></tr>
+      <tr><td>Each Co-Star in play</td><td class="q-n"><span class="q-pp">★</span></td></tr>
+      <tr><td>Each Extra in play (total rounded up)</td><td class="q-n">½</td></tr>
+      <tr><td>You reduce an enemy Star or Co-Star to 0 Health</td><td class="q-n">its starting Health</td></tr>
+      <tr><td>Star or Co-Star claims an objective token</td><td class="q-n"><span style="white-space: nowrap"><span class="q-pp">★</span><span class="q-pp">★</span></span></td></tr>
+      <tr><td>Initiative: each tie (both sides) / losing side</td><td class="q-n"><span class="q-pp">★</span> / <span style="white-space: nowrap"><span class="q-pp">★</span><span class="q-pp">★</span></span></td></tr>
+      <tr><td>Script: flip 2 cards (both) / finale next (on screen)</td><td class="q-n"><span style="white-space: nowrap"><span class="q-pp">★</span><span class="q-pp">★</span></span></td></tr>
+      </table>
+      <p class="q-ref">Captured models and an axed cast's Extras generate none. Dominated models count for their new side.</p>
+      <h3>Spend <span style="text-transform: none; font-size: 12px; color: var(--muted); letter-spacing: 0">unspent points carry over, with no limit</span></h3>
+      <ul style="column-count: 2; column-gap: 10px"><li>Activate a model: <span class="q-pp">★</span> each</li><li>Stretch dice: defence</li><li>Stretch dice: strike</li><li>Extra dice on a statistic test</li><li>Special effects and props</li><li>Remove a status: <span class="q-pp">★</span> each</li></ul>
+
+      <h2 style="margin-top: 8px">Epilogue <span style="font-size: 12px; color: var(--muted); letter-spacing: 0.03em">victory by VP difference, p. 115</span></h2>
+      <p>Ends when a side has no models in play, the script deck is empty after an end phase, or the episode's conditions are met.</p>
+      <table class="q-tbl">
+      <tr><th>Victory points</th><th style="text-align: right">VP</th></tr>
+      <tr><td>Enemy has no models in play (not also axed)</td><td class="q-n">+2</td></tr>
+      <tr><td>Enemy cast is axed</td><td class="q-n">+1</td></tr>
+      <tr><td>Each objective token held</td><td class="q-n">+1</td></tr>
+      <tr><td>Each enemy Star or Co-Star removed from play</td><td class="q-n">its starting Health</td></tr>
+      <tr><td>Each enemy Star or Co-Star ending with a status</td><td class="q-n">+1</td></tr>
+      <tr><td>You hold the maguffin</td><td class="q-n">+1D3</td></tr>
+      <tr><td>Episode's special conditions</td><td class="q-n">varies</td></tr>
+      </table>
+      <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; margin-top: 4px; text-align: center; font-size: 12.5px; line-height: 1.15">
+      <div style="background: #ece9e4; color: #1f2327; border-radius: 4px; padding: 3px 2px"><b style="font-size: 13px">0-1</b><br>Draw</div>
+      <div style="background: #e2d7d3; color: #1f2327; border-radius: 4px; padding: 3px 2px"><b style="font-size: 13px">2-3</b><br>Minor</div>
+      <div style="background: #d6bfba; color: #1f2327; border-radius: 4px; padding: 3px 2px"><b style="font-size: 13px">4-5</b><br>Decisive</div>
+      <div style="background: #c49891; color: #1f2327; border-radius: 4px; padding: 3px 2px"><b style="font-size: 13px">6-7</b><br>Crushing</div>
+      <div style="background: #9e2a24; color: #ffffff; border-radius: 4px; padding: 3px 2px"><b style="font-size: 13px">8+</b><br>Epic</div>
+      </div>
+      </div>
+      </div>
+      <h2 class="qref-title">In action</h2>
+      <div class="qref-grid">
+      <div class="panel qref-col">
+      <h2>Activating models</h2>
+      <p><b>Pay <span class="q-pp">★</span> to activate a model. It gets two actions.</b> It cannot make two strikes (fight, shoot or presence) in one activation, or a fight and a shoot.</p>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; margin-top: 6px">
+      <div class="q-act"><div class="q-at">Move</div>
+      <ul><li>Up to 6" across clear ground.</li><li>Most models can take both actions as moves.</li><li>Any move can change facing.</li></ul></div>
+      <div class="q-act"><div class="q-at">Strike</div>
+      <ul><li><b>Fight</b>: brawl, blunt or bladed weapon.</li><li><b>Shoot</b>: a ranged weapon.</li><li><b>Presence</b>: wits or strength of will.</li></ul></div>
+      <div class="q-act"><div class="q-at">Special</div>
+      <ul><li>Aim.</li><li>Pick up an objective token.</li><li>Some special effects.</li></ul></div>
+      <div class="q-act"><div class="q-at">Free</div>
+      <ul><li>Use a prop.</li><li>Charge attack.</li><li>Use a star quality.</li><li>Some special effects.</li></ul></div>
+      </div>
+      <p class="q-ref" style="margin-top: 3px">A special effect's card says whether it needs a special action or is free.</p>
+
+      <h2 style="margin-top: 10px">Stretch dice</h2>
+      <p>Buy extra dice for a defence roll, strike roll or statistic test: <span class="q-pp">★</span> per die, bought before you roll.</p>
+      <div class="q-box"><b>Score = your highest die, +1 for each other die that rolled 4, 5 or 6.</b><br>Rolls 2, 4 and 5 score 5 + 1 = 6.</div>
+      <p><b>Disadvantaged</b>: roll the initial die only, no stretch dice. <b>Rerolls</b>: keep the second result.</p>
+
+      <h2 style="margin-top: 10px">Statistic tests</h2>
+      <p>Roll one die (plus any stretch dice). Pass if the score equals or beats the target number for the statistic.</p>
+      <table class="q-tbl" style="text-align: center">
+      <tr><th>Statistic</th><th style="text-align: center">1</th><th style="text-align: center">2</th><th style="text-align: center">3</th><th style="text-align: center">4</th><th style="text-align: center">5</th><th style="text-align: center">6+</th></tr>
+      <tr><td style="text-align: left; font-weight: 600">Target</td><td>7+</td><td>6+</td><td>5+</td><td>4+</td><td>3+</td><td>2+</td></tr>
+      </table>
+      </div>
+      <div class="panel qref-col">
+      <h2>Defence and strike rolls</h2>
+      <p>The defender rolls first, then the attacker. <b>If the strike roll equals or beats the defence roll, the attack's effects apply.</b></p>
+      <h3>Defence roll</h3>
+      <div class="q-calc"><div><b>A</b>Defence statistic</div><div><b>B</b>+ modifiers</div><div><b>C</b>+ initial die</div><div><b>D</b>+ stretch dice</div></div>
+      <h3>Strike roll</h3>
+      <div class="q-calc"><div><b>A</b>Strike number</div><div><b>B</b>+ modifiers</div><div><b>C</b>+ initial die</div><div><b>D</b>+ stretch dice</div></div>
+      <p class="q-ref">A Stunned defender rolls no dice at all (steps C and D).</p>
+
+      <table class="q-tbl" style="margin-top: 6px">
+      <tr><th>Defence modifiers</th><th style="text-align: right">Mod</th></tr>
+      <tr><td>Each status on the defender</td><td class="q-n">-1</td></tr>
+      <tr><td>Soft cover (shoot attacks only)</td><td class="q-n">+1</td></tr>
+      <tr><td>Hard cover (shoot attacks only)</td><td class="q-n">+2</td></tr>
+      <tr><td>Behind an obstacle (fight and presence) or mounted</td><td class="q-n">+2</td></tr>
+      </table>
+      <table class="q-tbl" style="margin-top: 5px">
+      <tr><th>Strike modifiers</th><th style="text-align: right">Mod</th></tr>
+      <tr><td>Each status on the attacker</td><td class="q-n">-1</td></tr>
+      <tr><td>Aimed shot</td><td class="q-n">+1</td></tr>
+      </table>
+
+      <h3 style="margin-top: 8px">Disadvantaged: no stretch dice</h3>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px">
+      <div><p style="font-weight: 700; margin-bottom: 1px">Defender is</p>
+      <ul><li>Distracted</li><li>Immobilised</li><li>Knocked down</li><li>Stunned</li><li>On Fire</li><li>In hard or soft cover</li><li>Behind an obstacle</li><li>Mounted</li></ul></div>
+      <div><p style="font-weight: 700; margin-bottom: 1px">Defending against</p>
+      <ul><li>A charge attack</li><li>A free strike</li><li>An attack from the rear</li></ul>
+      <p style="font-weight: 700; margin: 5px 0 1px">Attacker is</p>
+      <ul><li>Knocked down</li><li>On Fire</li><li>Making a risky shot</li></ul></div>
+      </div>
+      </div>
+      <div class="panel qref-col">
+      <h2>Statuses</h2>
+      <div class="q-box" style="margin-top: 0"><ul style="margin: 0"><li><b>-1</b> to strike and defence rolls for each status.</li><li>A model has each status once. Gaining one it already has costs 1 Health instead.</li><li>In your action phase, <span class="q-pp">★</span> removes one status from one model (not Poisoned).</li></ul></div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 12px">
+      <div>
+      <div class="q-s"><img class="q-sti" src="assets/status/captured.png" alt="Captured token"><div><div class="q-sn">Captured</div><p>Generates no <span class="q-pp">★</span>; its captor gains them. To escape: activate it, pay <span class="q-pp">★</span> and win an opposed Spirit test (disadvantaged).</p></div></div>
+      <div class="q-s"><img class="q-sti" src="assets/status/distracted.png" alt="Distracted token"><div><div class="q-sn">Distracted</div><p>Reroll the highest die on every roll. A second move needs a passed Mind test.</p></div></div>
+      <div class="q-s"><img class="q-sti" src="assets/status/dominated.png" alt="Dominated token"><div><div class="q-sn">Dominated</div><p>Joins the other cast. Removing it costs <span class="q-pp">★</span> and needs an ally in base contact.</p></div></div>
+      <div class="q-s"><img class="q-sti" src="assets/status/immobilised.png" alt="Immobilised token"><div><div class="q-sn">Immobilised</div><p>Cannot activate until removed. Cannot be removed while it has other statuses. Disadvantaged.</p></div></div>
+      <div class="q-s"><img class="q-sti" src="assets/status/infected.png" alt="Infected token"><div><div class="q-sn">Infected</div><p>Plot points cannot remove it. At 0 Health the enemy rolls 1D6 in their end phase: on a 1 it returns as a new profile in their cast.</p></div></div>
+      </div>
+      <div>
+      <div class="q-s"><img class="q-sti" src="assets/status/onfire.png" alt="On Fire token"><div><div class="q-sn">On Fire</div><p>In your end phase roll 2D6: equal to or above Defence loses 1 Health. Then the enemy may move it up to&#160;3".</p></div></div>
+      <div class="q-s"><img class="q-sti" src="assets/status/poisoned.png" alt="Poisoned token"><div><div class="q-sn">Poisoned</div><p><span style="white-space: nowrap"><span class="q-pp">★</span><span class="q-pp">★</span></span> to remove.</p></div></div>
+      <div class="q-s"><img class="q-sti" src="assets/status/scared.png" alt="Scared token"><div><div class="q-sn">Scared</div><p>No presence attacks. A fight or shoot attack needs a passed Spirit test, or its strike counts as half (round up).</p></div></div>
+      <div class="q-s"><img class="q-sti" src="assets/status/stunned.png" alt="Stunned token"><div><div class="q-sn">Stunned</div><p>Knocked down. Cannot be given <span class="q-pp">★</span> in the action phase or make any attack, free strikes included. Rolls no dice when defending.</p></div></div>
+      <div class="q-s"><img class="q-sti" src="assets/status/weakened.png" alt="Weakened token"><div><div class="q-sn">Weakened</div><p>Only one action when activated.</p></div></div>
+      </div>
+      </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-index" class="view">
+    <div class="index-page">
+      <div class="panel ix-panel">
+        <div class="gp-head"><h2>Index</h2><span class="gp-count" id="ixCount"></span></div>
+        <p class="ix-intro">Type a rule, status, weapon effect, profile or episode to find the book and page it is on. This covers the indexes of the Core Rulebook and the 80s book, plus every Core profile with its own page. Click a profile name to open it in Casting.</p>
+        <div class="gp-filters">
+          <input type="search" id="ixSearch" placeholder="Search the index: cover, Stunned, plot points, Maverick Cop" aria-label="Search the index">
+          <div class="seg" id="ixBook" role="group" aria-label="Book"><button data-book="" class="is-on">Both books</button><button data-book="core">Core</button><button data-book="80s">80s</button></div>
+        </div>
+        <div id="ixList" class="ix-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-episodes" class="view">
+    <div class="index-page">
+      <div class="panel ix-panel">
+        <div class="gp-head"><h2>Episodes and tropes</h2><span class="gp-count" id="epCount"></span></div>
+        <p class="ix-intro">Browse what each episode and trope in the Core Rulebook and the 80s book is about, then turn to its page for the set up and rules. The summaries are short paraphrases, not the books' text.</p>
+        <div class="gp-filters">
+          <div class="seg" id="epKind" role="group" aria-label="Show"><button data-kind="episodes" class="is-on">Episodes</button><button data-kind="tropes">Tropes</button></div>
+          <input type="search" id="epSearch" placeholder="Search titles and summaries: bomb, vampires, heist" aria-label="Search episodes and tropes">
+          <select id="epGenre" aria-label="Genre"></select>
+          <div class="seg" id="epBook" role="group" aria-label="Book"><button data-book="" class="is-on">Both books</button><button data-book="core">Core</button><button data-book="80s">80s</button></div>
+        </div>
+        <p class="hint" id="epGenreNote" hidden>Open play episodes suit any genre, so they always show.</p>
+        <div id="epList" class="ix-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-about" class="view">
+    <div class="about">
+      <div class="panel about-intro">
+        <h2>About Casting Office</h2>
+        <p>Casting Office is a free, unofficial tool for designing profile cards and building casts for <b>7TV 2nd Edition</b>, the cinematic skirmish game by Crooked Dice Game Design Studio. Start from any of the 229 official Core and 80s profiles, customise it under the rules on pp. 38-47 of the Core Rulebook, or design your own Stars, Co-Stars, Extras and vehicles from scratch.</p>
+        <p>The card layout follows the official 2nd Edition cards so your custom profiles sit alongside the real ones on the table.</p>
+      </div>
+
+      <div class="panel about-buy">
+        <h2>Get the official game</h2>
+        <p>7TV, its rulebooks, genre guides and profile card art belong to Crooked Dice. You need the books to play, and this tool is no substitute for them. Rulebooks, profile cards, miniatures, tokens and scenery are all on the Crooked Dice website.</p>
+        <p>Crooked Dice also sells STL files of its miniatures for 3D printing on MyMiniFactory.</p>
+        <div class="row wrap about-links">
+          <a class="btn btn-primary about-link" href="https://crooked-dice.co.uk/" target="_blank" rel="noopener">Visit Crooked Dice</a>
+          <a class="btn btn-ghost about-link" href="https://www.myminifactory.com/users/CrookedDice" target="_blank" rel="noopener">Crooked Dice STL files on MyMiniFactory</a>
+        </div>
+      </div>
+
+      <div class="panel about-feedback">
+        <h2>Feedback and bug reports</h2>
+        <p>Found a wrong stat, a layout glitch, or have an idea for a feature? Open an issue on GitHub. Include the profile name and a screenshot if something looks off on a card.</p>
+        <div class="row wrap">
+          <a class="btn btn-primary about-link" href="https://github.com/justadude-g/7TV/issues/new/choose" target="_blank" rel="noopener">Send feedback</a>
+          <a class="btn btn-ghost about-link" href="https://github.com/justadude-g/7TV/issues" target="_blank" rel="noopener">See open issues</a>
+        </div>
+        <p class="hint">You need a free GitHub account to open an issue.</p>
+      </div>
+
+      <div class="panel about-notes">
+        <h2>Good to know</h2>
+        <ul>
+          <li>Your cards and casts are saved in this browser only. Nothing is uploaded. Use Export backup in My Cards to keep a copy or move to another computer.</li>
+          <li>Cards print at 63.5 x 88 mm, the size of standard card sleeves. Print the PDF at 100% (actual size).</li>
+          <li>Headings use League Gothic, numbers Anton and card text PT Sans Narrow, free stand-ins for the fonts on the printed cards. Frames and icons are drawn by the app, apart from the genre symbols.</li>
+          <li>The ratings calculator applies the customisation rules as written. Agree custom profiles with your opponent before play, as the rulebook recommends.</li>
+        </ul>
+        <div class="about-errata" id="aboutErrata">
+          <h3>Errata</h3>
+          <p>The official profiles in this tool include these corrections, confirmed by Karl Perrotto of Crooked Dice on 24 July 2026:</p>
+          <ul>
+            <li><b>Grizzled Veteran</b> (Core): the Quickdraw special effect is <b>Power Behind The Throne</b> <span class="sym">P</span>. Allies' <i>Leader</i> or <i>Unit Leader</i> special effects are extended by 3" for this turn.</li>
+            <li><b>Hardened Grunt</b> (80s): has <b>Military Training</b> <span class="sym">P</span> and no Unit Leader. When this model makes a strike, it can choose to add +1 to its strike roll for every plot point spent on extra dice, instead of getting the extra dice.</li>
+          </ul>
+        </div>
+        <p class="hint">7TV is a trademark of Crooked Dice Game Design Studio. This fan-made tool is not endorsed by or affiliated with Crooked Dice.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- NEW CARD WIZARD -->
+<dialog id="dlgNew" class="dlg dlg-wide">
+  <form method="dialog" class="dlg-head">
+    <h2 id="newTitle">New card</h2>
+    <button class="btn btn-ghost btn-small" value="cancel" aria-label="Close">Close</button>
+  </form>
+  <div id="newStep2" class="new-step">
+    <div class="picker-top">
+      <div class="row wrap filters">
+        <div class="seg" id="bookFilter" role="group" aria-label="Book">
+          <button data-book="" class="is-on">All books</button><button data-book="core">Core</button><button data-book="80s">80s</button><button data-book="steeljustice">Steel Justice</button>
+        </div>
+        <input type="search" id="profileSearch" placeholder="Search names, examples, attacks or effects">
+        <div class="seg" id="affFilter" role="group" aria-label="Affiliation">
+          <button data-aff="" class="is-on">Any</button><button data-aff="heroic">Heroic</button><button data-aff="villainous">Villainous</button><button data-aff="neutral">Neutral</button>
+        </div>
+      </div>
+      <div class="role-find">
+        <label class="role-label" for="roleSearch">Find by role</label>
+        <input type="search" id="roleSearch" placeholder="Type a character idea: vampires, cops, CEOs, barbarians" autocomplete="off">
+        <div class="role-hits" id="roleHits" aria-live="polite"></div>
+      </div>
+      <div class="kind-tabs" id="kindTabs" role="group" aria-label="Profile type"></div>
+      <div class="blank-row" id="blankRow"></div>
+      <p class="pick-help">Click a profile to see its summary, then press <b>Select</b> to start your card from it. Double-click or Enter also works.</p>
+    </div>
+    <div class="picker">
+      <div class="p-list" id="profileList" role="listbox" aria-label="Profiles"></div>
+      <div class="p-detail" id="profileDetail" aria-live="polite"></div>
+    </div>
+    <div class="picker-foot" id="pickerFoot"></div>
+  </div>
+</dialog>
+
+<!-- SPECIAL EFFECTS LIBRARY -->
+<dialog id="dlgLibrary" class="dlg dlg-wide">
+  <form method="dialog" class="dlg-head">
+    <h2>Special Effects Library</h2>
+    <button class="btn btn-ghost btn-small" value="cancel">Close</button>
+  </form>
+  <div class="row wrap filters">
+    <input type="search" id="libSearch" placeholder="Search by name or text">
+    <div class="seg" id="libKind" role="group" aria-label="Section">
+      <button data-kind="all" class="is-on">All</button><button data-kind="star">Star Qualities</button><button data-kind="fx">Special Effects</button><button data-kind="vehicle" hidden>Vehicle effects and stunts</button>
+    </div>
+    <label class="inline">Add to
+      <select id="libTarget"></select>
+    </label>
+  </div>
+  <div id="libList" class="lib-list"></div>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="js/vendor/jspdf.umd.min.js?v=202610270014"></script>
+<script src="js/data/rules.js?v=202610270014"></script>
+<script src="js/data/profiles.js?v=202610270014"></script>
+<script src="js/data/profiles-stubs.js?v=202610270014"></script>
+<script src="js/data/special-effects.js?v=202610270014"></script>
+<script src="js/data/units.js?v=202610270014"></script>
+<script src="js/data/genres-info.js?v=202610270014"></script>
+<script src="js/data/movies.js?v=202610270014"></script>
+<script src="js/data/book-index.js?v=202610270014"></script>
+<script src="js/data/episodes.js?v=202610270014"></script>
+<script src="js/data/roles.js?v=202610270014"></script>
+<script src="js/prop-render.js?v=202610270014"></script>
+<script src="js/card-render.js?v=202610270014"></script>
+<script src="js/ratings.js?v=202610270014"></script>
+<script src="js/cast-rules.js?v=202610270014"></script>
+<script src="js/card-store.js?v=202610270014"></script>
+<script src="js/print.js?v=202610270014"></script>
+<script src="js/app.js?v=202610270014"></script>
+<script src="js/props.js?v=202610270014"></script>
+<script src="js/genres.js?v=202610270014"></script>
+<script src="js/index-page.js?v=202610270014"></script>
+<script src="js/episodes-page.js?v=202610270014"></script>
+<script src="js/cast.js?v=202610270014"></script>
+</body>
+</html>

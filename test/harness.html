@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><base href="../"><link rel="stylesheet" href="css/fonts.css">
+<style>body{margin:0;background:#666;display:flex;gap:10px;flex-wrap:wrap} canvas{width:375px;height:520px}</style></head><body>
+<script src="js/data/rules.js"></script><script src="js/data/profiles.js"></script><script src="js/card-render.js"></script>
+<script>
+(async()=>{
+  await CardRender.loadAssets();
+  const ids=(new URLSearchParams(location.search).get('ids')||'bold-blade').split(',');
+  for(const id of ids){
+    const p=SEVENTV_PROFILES.find(x=>x.id===id); if(!p) continue;
+    const f=document.createElement('canvas'); CardRender.renderFront(f,p); f.id='front-'+id; document.body.appendChild(f);
+    const b=document.createElement('canvas'); CardRender.renderBack(b,p); b.id='back-'+id; document.body.appendChild(b);
+  }
+  document.body.dataset.done='1';
+})();
+</script></body></html>
