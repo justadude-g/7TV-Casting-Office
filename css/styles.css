@@ -79,11 +79,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
 .brand h1 { font-size: 40px; }
 .brand p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
-.brand-mark {
-  width: 46px; height: 46px; border-radius: 50%; flex: none;
-  background: radial-gradient(circle at 50% 50%, var(--star-band) 0 38%, transparent 39%), #1b1d20;
-  border: 4px solid var(--star-band); box-shadow: inset 0 0 0 9px #1b1d20;
-}
+.brand-mark { width: 46px; height: 46px; flex: none; }
+.brand-mark .bm-disc { fill: #1b1d20; stroke: var(--star-band); stroke-width: 5; }
+.brand-mark .bm-ant { fill: none; stroke: var(--star-band); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.brand-mark .bm-tv { fill: var(--star-band); }
+.brand-mark .bm-scr { fill: #1b1d20; }
 .tabs { display: flex; gap: 4px; }
 .tab { background: none; border: 0; padding: 10px 14px; cursor: pointer; color: var(--text-2); font: 600 16px var(--body); border-bottom: 3px solid transparent; white-space: nowrap; }
 /* nine tabs: below this width the tabs take their own row under the brand */
