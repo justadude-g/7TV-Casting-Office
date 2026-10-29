@@ -1,4 +1,4 @@
-/* Film inspiration for the Genres page: films from the 1980s on.
+/* Film inspiration for the Genres page: films from the 1950s on.
    g: genre keys from both sets (Core: action adventure fantasy historical horror scifi;
       80s: coldwar frightmare greedglamour hiredhelp rebelstate silicondream).
    cast: [character, actor, role, suggested profile id]. Role is affiliation + type:
@@ -293,6 +293,9 @@
       ['Grey Trace', 'Logan Marshall-Green', 'hs', 'cybernetic-organism-80s'], ['STEM', 'Simon Maiden', 'hc', 'incorporeal-advisor-80s'], ['Det. Cortez', 'Betty Gabriel', 'hc', 'maverick-cop-80s'],
       ['Eron Keen', 'Harrison Gilbertson', 'vs', 'millionaire-meddler-80s'], ['Fisk', 'Benedict Hardie', 'vc', 'shinzu-sj']]),
 
+    M('Den of Thieves', 2018, 'action greedglamour hiredhelp', 'A bullish Los Angeles sheriff\'s detective hunts a crew of ex-Marines planning to rob the Federal Reserve, and the driver they trust has plans of his own.', [
+      ['Nick "Big Nick" O\'Brien', 'Gerard Butler', 'hs', 'grizzled-veteran'], ['Ray Merrimen', 'Pablo Schreiber', 'vs', 'bold-planner-80s'], ['Enson Levoux', '50 Cent', 'vc', 'career-criminal'],
+      ['Donnie Wilson', 'O\'Shea Jackson Jr.', 've', 'driver-80s'], ['Bosco and the crew', 'Evan Jones', 've', 'mercenary'], ['Major Crimes detectives', '', 'he', 'plainclothes-cop-80s']]),
     // 2020s
     M('Tenet', 2020, 'action scifi coldwar greedglamour', 'A secret agent learns to move against the flow of time to stop an arms dealer ending the world.', [
       ['The Protagonist', 'John David Washington', 'hs', 'special-agent-80s'], ['Neil', 'Robert Pattinson', 'hc', 'loyal-sidekick'], ['Kat', 'Elizabeth Debicki', 'hc', 'everyman'],
@@ -355,24 +358,6 @@
       ['Spike', 'Alfie Williams', 'hs', 'innocent-soul'], ['Jamie', 'Aaron Taylor-Johnson', 'hc', 'lone-survivor'], ['Dr. Ian Kelson', 'Ralph Fiennes', 'hc', 'wise-mentor'],
       ['Samson, the Alpha', '', 'vc', 'unstoppable-beast'], ['The infected', '', 've', 'zombie']]),
     // From the Core Rulebook and 80s bibliographies (films only; TV, cartoons, games and the more obscure films left out)
-    M('Nosferatu', 1922, 'horror historical frightmare', 'An estate agent travels to Transylvania to sell a house to Count Orlok, who follows him home bringing plague.', [
-      ['Thomas Hutter', 'Gustav von Wangenheim', 'hs', 'innocent-soul'], ['Ellen Hutter', 'Greta Schröder', 'hc', 'final-girl'], ['Count Orlok', 'Max Schreck', 'vs', 'dark-shadow'],
-      ['Knock', 'Alexander Granach', 'vc', 'red-right-hand'], ['Plague rats', '', 've', 'mutated-vermin']]),
-    M('Frankenstein', 1931, 'horror scifi frightmare', 'A scientist assembles a man from corpses and brings it to life, with tragic results.', [
-      ['Elizabeth', 'Mae Clarke', 'hc', 'everyman'], ['Dr. Waldman', 'Edward Van Sloan', 'hc', 'wise-mentor'], ['The Monster', 'Boris Karloff', 'ns', 'raging-brute-80s'],
-      ['Henry Frankenstein', 'Colin Clive', 'vc', 'mad-scientist'], ['Fritz', 'Dwight Frye', 'vc', 'red-right-hand'], ['Angry villagers', '', 'ne', 'militia']]),
-    M('King Kong', 1933, 'adventure horror fantasy frightmare', 'A film crew on an uncharted island captures a giant ape and brings him to New York in chains.', [
-      ['Carl Denham', 'Robert Armstrong', 'hs', 'intrepid-adventurer'], ['Ann Darrow', 'Fay Wray', 'hc', 'final-girl'], ['Jack Driscoll', 'Bruce Cabot', 'hc', 'loyal-sidekick'],
-      ['Kong', '', 'vs', 'great-monstrosity'], ['Skull Island dinosaurs', '', 've', 'monster-of-the-week']]),
-    M('The Wizard of Oz', 1939, 'fantasy adventure', 'A Kansas farm girl is swept into the land of Oz and must reach the Emerald City with three unlikely companions.', [
-      ['Dorothy Gale', 'Judy Garland', 'hs', 'innocent-soul'], ['The Scarecrow', 'Ray Bolger', 'hc', 'loyal-sidekick'], ['The Tin Man', 'Jack Haley', 'hc', 'everyman'],
-      ['The Cowardly Lion', 'Bert Lahr', 'hc', 'everyman'], ['The Wicked Witch of the West', 'Margaret Hamilton', 'vs', 'dark-shadow'], ['Winged monkeys', '', 've', 'monster-of-the-week']]),
-    M('The Maltese Falcon', 1941, 'adventure greedglamour hiredhelp', 'Sam Spade is pulled into a ruthless hunt for a jewel-encrusted statuette after his partner is shot.', [
-      ['Sam Spade', 'Humphrey Bogart', 'hs', 'grizzled-veteran'], ['Brigid O\'Shaughnessy', 'Mary Astor', 'ns', 'seductive-schemer-80s'], ['Kasper Gutman', 'Sydney Greenstreet', 'vs', 'mastermind'],
-      ['Joel Cairo', 'Peter Lorre', 'vc', 'career-criminal'], ['Wilmer', 'Elisha Cook Jr.', 'vc', 'red-right-hand']]),
-    M('The Big Sleep', 1946, 'adventure greedglamour hiredhelp', 'Private eye Philip Marlowe takes a job from a dying general and falls into blackmail, murder and lies.', [
-      ['Philip Marlowe', 'Humphrey Bogart', 'hs', 'grizzled-veteran'], ['Vivian Rutledge', 'Lauren Bacall', 'hc', 'daring-rebel'], ['Eddie Mars', 'John Ridgely', 'vs', 'kingpin'],
-      ['Carmen Sternwood', 'Martha Vickers', 'vc', 'career-criminal'], ['Mars\'s gunmen', '', 've', 'thug']]),
     M('The War of the Worlds', 1953, 'scifi horror', 'Martian war machines land in California and lay waste to everything the military throws at them.', [
       ['Dr. Clayton Forrester', 'Gene Barry', 'hs', 'unlikely-interloper-80s'], ['Sylvia Van Buren', 'Ann Robinson', 'hc', 'everyman'], ['US Army', '', 'ne', 'soldier'],
       ['The Martian war machines', '', 'vs', 'great-monstrosity'], ['Martians', '', 've', 'alien-invader']]),
