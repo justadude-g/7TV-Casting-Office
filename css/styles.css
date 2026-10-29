@@ -657,7 +657,6 @@ html[data-theme="dark"] .qref { --q-red: #ec8076; --q-blue: #8dbbe0; }
 .ix-name { font-weight: 700; color: var(--strong); }
 .ix-parent { color: var(--muted); font-weight: 600; }
 .ix-also { color: var(--muted); font-size: 13.5px; }
-.ix-tag { display: inline-block; margin-left: 6px; font-size: 11.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px; color: #fff; background: var(--k); vertical-align: 1px; white-space: nowrap; }
 .ix-refs { display: flex; flex-wrap: wrap; gap: 6px 12px; justify-content: flex-end; }
 .ix-ref { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
 .ix-book { font-size: 11.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; padding: 1px 7px; border-radius: 4px; color: #fff; }

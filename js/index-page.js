@@ -1,5 +1,5 @@
-/* Index page: search the Core Rulebook and 80s book indexes, plus every Core profile with its page,
-   and see which book and page each term is on. */
+/* Index page: search the Core Rulebook and 80s book indexes and see which book and page each term is on.
+   Profile cards are left out: the New card picker and the Call Sheet already list them. */
 (function () {
   const R = window.SEVENTV_RULES;
   const RAW = window.SEVENTV_BOOK_INDEX || [];
@@ -15,26 +15,22 @@
 
   /* one row per term (parent + term), holding the pages in each book */
   function buildRows() {
-    const prof = new Map();
-    for (const p of PROFILES) if (!p.book) prof.set(p.genreSet + '|' + norm(p.name), p);
+    // names of profile cards, which are not listed here
+    const profNames = new Set();
+    for (const p of PROFILES) if (!p.book) profNames.add(p.genreSet + '|' + norm(p.name));
+    const isProfile = (e) => /\bprofiles$/i.test(e.t) || (!e.in && (profNames.has(e.b + '|' + norm(e.t)) || (e.also && profNames.has(e.b + '|' + norm(e.also)))));
     const byKey = new Map();
     const add = (e) => {
+      if (isProfile(e)) return;
       const key = norm((e.in ? e.in + ' > ' : '') + e.t);
       let r = byKey.get(key);
-      if (!r) { r = { t: e.t, in: e.in || '', also: e.also || '', refs: [], profile: null }; byKey.set(key, r); }
+      if (!r) { r = { t: e.t, in: e.in || '', also: e.also || '', refs: [] }; byKey.set(key, r); }
       if (!r.refs.some((x) => x.b === e.b && x.p === e.p)) r.refs.push({ b: e.b, p: e.p });
-      const p = e.profile || (!e.in && (prof.get(e.b + '|' + norm(e.t)) || (e.also && prof.get(e.b + '|' + norm(e.also)))));
-      if (p) r.profile = p;
     };
     RAW.forEach(add);
-    // the Core index only gives page ranges for profiles, so list each Core profile on its own page
-    for (const p of PROFILES) {
-      if (p.book || p.genreSet !== 'core' || !p.bookPage) continue;
-      add({ t: p.name, p: String(p.bookPage), b: 'core', profile: p });
-    }
     X.rows = [...byKey.values()].map((r) => Object.assign(r, {
       sortKey: norm(r.in ? r.in + ' ' + r.t : r.t).replace(/^[^a-z0-9]+/, ''),
-      hay: norm([r.t, r.in, r.also, r.profile ? r.profile.name : ''].join(' '))
+      hay: norm([r.t, r.in, r.also].join(' '))
     })).sort((a, b) => a.sortKey.localeCompare(b.sortKey, undefined, { numeric: true }));
   }
 
@@ -58,12 +54,10 @@
     const refs = r.refs.filter((x) => !X.book || x.b === X.book)
       .sort((a, b) => (a.b === 'core' ? 0 : 1) - (b.b === 'core' ? 0 : 1))
       .map((x) => `<span class="ix-ref"><span class="ix-book ix-${x.b === 'core' ? 'core' : 'b80'}">${BOOK[x.b]}</span><span class="ix-pages">${esc(pagesLabel(x.p))}</span></span>`).join('');
-    const p = r.profile;
-    const name = p && !p.stub ? `<button type="button" class="link ix-name" data-pid="${p.id}" title="Open ${esc(p.name)} in the New card picker">${mark(r.t, q)}</button>` : `<span class="ix-name">${mark(r.t, q)}</span>`;
-    const also = r.also ? ` <span class="ix-also">(card: ${mark(r.also, q)})</span>` : '';
-    const tag = p ? ` <span class="ix-tag" style="--k:${R.KINDS[p.kind].band}">${esc(R.AFFILIATIONS[p.affiliation])} ${esc(R.KINDS[p.kind].label)}</span>` : '';
+    const name = `<span class="ix-name">${mark(r.t, q)}</span>`;
+    const also = r.also ? ` <span class="ix-also">(${mark(r.also, q)})</span>` : '';
     return `<div class="ix-row${r.in ? ' ix-sub' : ''}">
-      <span class="ix-term">${r.in ? `<span class="ix-parent">${mark(r.in, q)} &rsaquo;</span> ` : ''}${name}${also}${tag}</span>
+      <span class="ix-term">${r.in ? `<span class="ix-parent">${mark(r.in, q)} &rsaquo;</span> ` : ''}${name}${also}</span>
       <span class="ix-refs">${refs}</span>
     </div>`;
   }
@@ -93,7 +87,6 @@
       const b = e.target.closest('button'); if (!b) return;
       $$('#ixBook button').forEach((x) => x.classList.toggle('is-on', x === b)); X.book = b.dataset.book; render();
     });
-    $('#ixList').addEventListener('click', (e) => { const b = e.target.closest('[data-pid]'); if (b) App.openProfile(b.dataset.pid); });
     X.built = true;
   }
 
